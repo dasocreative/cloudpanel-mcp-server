@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="certificates">
+  <rect width="48" height="48" rx="12" fill="#0d6efd" fill-opacity="0.12"/>
+  <g transform="translate(12 12)" fill="none" stroke="#0d6efd" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4.5" y="10.5" width="15" height="11" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><path d="M12 15v2.5"/>
+  </g>
+</svg>

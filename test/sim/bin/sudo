@@ -1,0 +1,8 @@
+#!/bin/sh
+# A fake sudo: only "sudo -n <command>" is accepted, like a sudoers rule with NOPASSWD.
+if [ "$1" != "-n" ]; then
+  echo "sudo: a password is required" >&2
+  exit 1
+fi
+shift
+exec "$@"

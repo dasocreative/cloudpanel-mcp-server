@@ -1,0 +1,21 @@
+#!/bin/sh
+# A fake ssh for tests: skips ssh's options, remembers the host and the remote command, and runs the
+# remote command through "sh -c" exactly like a remote login shell would parse it. The fake sudo and
+# clpctl in this directory's PATH do the rest.
+HOST=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -o|-F|-p|-l|-i) shift 2 ;;
+    -T) shift ;;
+    --) shift; break ;;
+    *) HOST=$1; shift ;;
+  esac
+done
+if [ -n "${FAKE_SSH_LOG:-}" ]; then
+  printf '%s\t%s\n' "$HOST" "$*" >> "$FAKE_SSH_LOG"
+fi
+if [ -n "${FAKE_SSH_FAIL:-}" ]; then
+  echo "ssh: connect to host $HOST port 22: Connection refused" >&2
+  exit 255
+fi
+exec sh -c "$*"

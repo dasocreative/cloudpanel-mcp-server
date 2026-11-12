@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-label="cloudpanel-mcp-server: let your AI assistant run your CloudPanel server, with you approving every change">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d6efd"/>
+      <stop offset="1" stop-color="#0743a8"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="0.82" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="400" rx="24" fill="url(#bg)"/>
+  <rect width="1280" height="400" rx="24" fill="url(#grid)"/>
+  <rect width="1280" height="400" rx="24" fill="url(#glow)"/>
+
+  <g transform="translate(72 76) scale(1.125)">
+    <rect width="64" height="64" rx="16" fill="#ffffff"/>
+    <g fill="none" stroke="#0d6efd" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="13" y="18" width="30" height="10" rx="3"/>
+      <rect x="13" y="32" width="30" height="10" rx="3"/>
+      <rect x="13" y="46" width="30" height="0.01" rx="0" opacity="0"/>
+      <path d="M18.5 23h.01M18.5 37h.01"/>
+      <path d="M28 23h9M28 37h9"/>
+    </g>
+    <path d="M50 10c.7 3.6 1.9 4.8 5.5 5.5-3.6.7-4.8 1.9-5.5 5.5-.7-3.6-1.9-4.8-5.5-5.5 3.6-.7 4.8-1.9 5.5-5.5z" fill="#0d6efd"/>
+    <path d="M44 44.5l8.5 3.2v4.6c0 3.9-2.7 7.1-8.5 8.7-5.8-1.6-8.5-4.8-8.5-8.7v-4.6z" fill="#0d6efd"/>
+    <path d="M40.6 52.6l2.4 2.4 4.4-4.4" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="168" y="112" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="22" font-weight="600" fill="#cfe2ff" letter-spacing="2">UNOFFICIAL MCP SERVER</text>
+  <text x="168" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="40" font-weight="800" fill="#ffffff">cloudpanel-mcp-server</text>
+  <text x="72" y="218" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700" fill="#ffffff">Let your AI assistant run your CloudPanel server,</text>
+  <text x="72" y="256" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="700" fill="#ffffff">with you approving every change.</text>
+
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="600" fill="#ffffff">
+    <rect x="72" y="292" width="204" height="40" rx="20" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.35"/>
+    <text x="174" y="318" text-anchor="middle">Read-only by default</text>
+    <rect x="288" y="292" width="184" height="40" rx="20" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.35"/>
+    <text x="380" y="318" text-anchor="middle">You approve changes</text>
+    <rect x="484" y="292" width="204" height="40" rx="20" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.35"/>
+    <text x="586" y="318" text-anchor="middle">Key locked to a gate</text>
+  </g>
+
+  <!-- illustration: assistant -> gate -> server -->
+  <g transform="translate(838 92)">
+    <rect x="0" y="40" width="132" height="92" rx="18" fill="#ffffff"/>
+    <path d="M30 132l-6 22 26-22z" fill="#ffffff"/>
+    <g fill="none" stroke="#0d6efd" stroke-width="5" stroke-linecap="round"><path d="M28 74h76M28 98h52"/></g>
+    <path d="M118 22c1.2 6.3 3.3 8.4 9.6 9.6-6.3 1.2-8.4 3.3-9.6 9.6-1.2-6.3-3.3-8.4-9.6-9.6 6.3-1.2 8.4-3.3 9.6-9.6z" fill="#ffffff"/>
+
+    <path d="M146 92h48" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <path d="M234 44l40 15v30c0 25-17 45-40 52-23-7-40-27-40-52V59z" fill="#ffffff"/>
+    <path d="M218 92l11 11 22-23" fill="none" stroke="#0d6efd" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <path d="M286 92h40" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+    <g transform="translate(336 30)">
+      <rect x="0" y="0" width="56" height="34" rx="8" fill="#ffffff"/>
+      <rect x="0" y="44" width="56" height="34" rx="8" fill="#ffffff"/>
+      <rect x="0" y="88" width="56" height="34" rx="8" fill="#ffffff" fill-opacity="0.85"/>
+      <g fill="#0d6efd"><circle cx="13" cy="17" r="4"/><circle cx="13" cy="61" r="4"/><circle cx="13" cy="105" r="4"/></g>
+      <g stroke="#0d6efd" stroke-width="4" stroke-linecap="round"><path d="M27 17h18M27 61h18M27 105h18"/></g>
+    </g>
+    <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#cfe2ff" text-anchor="middle">
+      <text x="66" y="186">your AI assistant</text>
+      <text x="234" y="186">the gate</text>
+      <text x="364" y="186">CloudPanel</text>
+    </g>
+  </g>
+</svg>

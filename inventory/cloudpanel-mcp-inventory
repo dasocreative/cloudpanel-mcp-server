@@ -1,0 +1,161 @@
+#!/bin/sh
+# cloudpanel-mcp-inventory - UNOFFICIAL, read-only "list the sites" helper for cloudpanel-mcp-server.
+#
+# CloudPanel's own CLI (clpctl) cannot list sites. This script fills that one gap by READING the
+# NGINX vhost files that CloudPanel writes. It is not part of CloudPanel and knows nothing about
+# its private database; the site type it reports is a GUESS from the vhost.
+#
+# - It takes NO arguments (it refuses any).
+# - It writes nothing, anywhere. It only reads $VHOST_DIR/*.conf and, to say when a certificate
+#   expires, the certificate files named in those vhosts - but only inside $CERT_DIR.
+# - Every value it prints passed a strict pattern first; nothing from a file is printed as-is.
+# - It prints one JSON document on stdout.
+#
+# Install it as root, read it first, and give the account the MCP server logs in as exactly one
+# sudoers line (docs/SETUP.md, "Inventory"):
+#   install -o root -g root -m 0755 cloudpanel-mcp-inventory /usr/local/sbin/cloudpanel-mcp-inventory
+#   deploy ALL=(root) NOPASSWD: /usr/local/sbin/cloudpanel-mcp-inventory ""
+
+set -u
+LC_ALL=C
+export LC_ALL
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+umask 077
+
+VHOST_DIR=/etc/nginx/sites-enabled
+CERT_DIR=/etc/nginx/ssl-certificates
+MAX_FILES=500
+MAX_BYTES=65536
+
+if [ "$#" -ne 0 ]; then
+  echo "cloudpanel-mcp-inventory: no arguments are accepted" >&2
+  exit 2
+fi
+
+# Parses one vhost and prints one line of validated fields, separated by "|":
+#   domain|aliases (JSON strings)|kind|siteUser|root|upstream|certificate path
+# Every field is checked here against a strict pattern; a field that fails is printed empty.
+extract() {
+  # No interval expressions ({n,m}) in the awk patterns: older mawk releases (Debian 12, Ubuntu 22.04)
+  # do not support them. Lengths are checked with length() instead.
+  awk -v certdir="$CERT_DIR" '
+    function clean(s) { sub(/#.*/, "", s); return s }
+    function value(stmt, key,   m) {
+      if (stmt ~ ("^[ \t]*" key "[ \t]+[^ \t]")) {
+        m = stmt
+        sub(("^[ \t]*" key "[ \t]+"), "", m); sub(/[ \t]+$/, "", m)
+        return m
+      }
+      return ""
+    }
+    function isdomain(d,   n, labels, i) {
+      if (length(d) > 253) return 0
+      if (d !~ /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/) return 0
+      n = split(d, labels, ".")
+      for (i = 1; i <= n; i++) if (length(labels[i]) > 63) return 0
+      return 1
+    }
+    function emit(   n, i, parts, domain, aliases, user, home, kind, upstream, cert, candidate) {
+      n = split(names, parts, /[ \t]+/)
+      domain = ""; aliases = ""
+      for (i = 1; i <= n; i++) {
+        if (!isdomain(parts[i])) continue
+        if (domain == "") domain = parts[i]
+        else aliases = aliases (aliases == "" ? "" : ",") "\"" parts[i] "\""
+      }
+      if (domain == "" && !panel) return 0
+      user = ""; home = ""
+      if (length(root) <= 250 && root ~ /^\/home\/[a-z][a-z0-9_-]*\/htdocs\/[A-Za-z0-9._\/-]+$/ && root !~ /\.\./ && index(root, "\\") == 0) {
+        candidate = root; sub(/^\/home\//, "", candidate); sub(/\/.*$/, "", candidate)
+        if (length(candidate) <= 32) { user = candidate; home = root }
+      }
+      kind = "static"; upstream = ""
+      if (panel) kind = "panel"
+      else if (fcgi != "") kind = "php"
+      else if (prox != "") {
+        kind = "proxy"
+        candidate = prox; sub(/\/$/, "", candidate)
+        if (length(candidate) <= 200 && candidate ~ /^(https?:\/\/)?(\[[0-9a-f:]+\]|[a-z0-9][a-z0-9.-]*)(:[0-9]+)?(\/[A-Za-z0-9._\/-]*)?$/ && candidate !~ /\.\./ && index(candidate, "\\") == 0) upstream = candidate
+      }
+      cert = ""
+      if (length(certfile) <= 256 && index(certfile, certdir "/") == 1 && certfile ~ /^\/[A-Za-z0-9._\/-]+\.(crt|pem)$/ && certfile !~ /\.\./ && index(certfile, "\\") == 0) cert = certfile
+      printf "%s|%s|%s|%s|%s|%s|%s\n", domain, aliases, kind, user, home, upstream, cert
+      return 1
+    }
+    BEGIN { depth = 0; inserver = 0; done = 0 }
+    {
+      line = clean($0)
+      if (done) next
+      if (!inserver && depth == 0 && line ~ /^[ \t]*server[ \t]*\{/) {
+        inserver = 1; names = ""; root = ""; fcgi = ""; prox = ""; certfile = ""; panel = 0
+      }
+      if (inserver) {
+        n = split(line, stmts, /[;{}]/)
+        for (k = 1; k <= n; k++) {
+          st = stmts[k]
+          v = value(st, "server_name"); if (v != "" && names == "") names = v
+          v = value(st, "root"); if (v != "" && root == "") root = v
+          v = value(st, "fastcgi_pass"); if (v != "" && fcgi == "") fcgi = v
+          v = value(st, "proxy_pass"); if (v != "" && prox == "") prox = v
+          v = value(st, "ssl_certificate"); if (v != "" && certfile == "") certfile = v
+          if (st ~ /^[ \t]*listen[ \t]+(\[::\]:)?8443([ \t]|$)/) panel = 1
+        }
+      }
+      t = line
+      opens = gsub(/\{/, "{", t)
+      closes = gsub(/\}/, "}", t)
+      depth += opens - closes
+      if (depth < 0) depth = 0
+      if (inserver && depth == 0) {
+        inserver = 0
+        if (root != "" || fcgi != "" || prox != "" || panel) {
+          if (emit()) done = 1
+        }
+      }
+    }
+  '
+}
+
+printf '{"generator":"cloudpanel-mcp-inventory","version":1,"unofficial":true,"sites":['
+sep=''
+count=0
+for f in "$VHOST_DIR"/*.conf; do
+  [ -f "$f" ] || continue
+  count=$((count + 1))
+  [ "$count" -le "$MAX_FILES" ] || break
+  size=$(wc -c < "$f" 2>/dev/null)
+  size=${size##* }
+  case $size in '' | *[!0-9]*) continue ;; esac
+  [ "$size" -le "$MAX_BYTES" ] || continue
+  line=$(extract < "$f" 2>/dev/null | head -n 1)
+  [ -n "$line" ] || continue
+  IFS='|' read -r domain aliases kind site_user site_root upstream cert <<VHOST_LINE
+$line
+VHOST_LINE
+
+  expires=''
+  soon=''
+  if [ -n "$cert" ] && [ -f "$cert" ] && command -v openssl >/dev/null 2>&1; then
+    end=$(openssl x509 -noout -enddate -in "$cert" 2>/dev/null | sed -n 's/^notAfter=//p' | head -n 1)
+    case $end in
+      *[!A-Za-z0-9\ :]*) ;;
+      *\ GMT)
+        if [ "${#end}" -le 40 ]; then
+          expires=$end
+          if openssl x509 -noout -checkend 2592000 -in "$cert" >/dev/null 2>&1; then soon=false; else soon=true; fi
+        fi
+        ;;
+    esac
+  fi
+
+  base=${f##*/}
+  printf '%s{"domain":"%s","aliases":[%s],"kind":"%s"' "$sep" "$domain" "$aliases" "$kind"
+  [ -z "$site_user" ] || printf ',"siteUser":"%s","root":"%s"' "$site_user" "$site_root"
+  [ -z "$upstream" ] || printf ',"upstream":"%s"' "$upstream"
+  [ -z "$expires" ] || printf ',"certificateExpires":"%s","certificateExpiresWithin30Days":%s' "$expires" "$soon"
+  case $base in *[!A-Za-z0-9._-]*) ;; *) printf ',"file":"%s"' "$base" ;; esac
+  printf '}'
+  sep=','
+done
+printf ']}\n'

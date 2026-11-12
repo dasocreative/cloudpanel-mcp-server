@@ -1,0 +1,35 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste passwords, private keys, server addresses or the audit log. Replace host names with `example.com`.
+  - type: input
+    id: version
+    attributes:
+      label: cloudpanel-mcp-server version
+    validations:
+      required: true
+  - type: input
+    id: cloudpanel
+    attributes:
+      label: CloudPanel version and operating system of the server
+      description: For example 2.5.x on Debian 12
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP client and its version, and your operating system
+      description: For example Claude Code 2.1.x on macOS
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: Include the tool name and the (redacted) result, and the output of `clp_server_info` if it helps.
+    validations:
+      required: true

@@ -1,0 +1,31 @@
++----------------+----------------+--------+
+| Name           | Root Directory | Type   |
++----------------+----------------+--------+
+| CakePHP 5      | webroot        | System |
+| CodeIgniter 4  | public         | System |
+| Contao 4       | public         | System |
+| Drupal 10      | web            | System |
+| Drupal 11      | web            | System |
+| Generic        |                | System |
+| Joomla 6       |                | System |
+| Laminas        | public         | System |
+| Laravel 12     | public         | System |
+| Laravel 13     | public         | System |
+| Magento 2      | pub            | System |
+| Matomo 5       |                | System |
+| Mautic 7       |                | System |
+| Moodle 5       |                | System |
+| Neos 9         | Web            | System |
+| Nextcloud 34   |                | System |
+| OwnCloud 12    |                | System |
+| PrestaShop 1.7 |                | System |
+| Shopware 6     | public         | System |
+| Slim 4         | public         | System |
+| Symfony 7      | public         | System |
+| Symfony 8      | public         | System |
+| TYPO3 14       | public         | System |
+| WHMCS          |                | System |
+| WooCommerce    |                | System |
+| WordPress      |                | System |
+| Yii 2          | web            | System |
++----------------+----------------+--------+

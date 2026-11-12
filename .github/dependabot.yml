@@ -1,0 +1,19 @@
+# Dependabot opens pull requests for new versions. The project pins exact versions, so every update is a
+# reviewed change, and the tests (including the protocol-era checks) must pass before it is merged.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+    labels: [dependencies]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies]

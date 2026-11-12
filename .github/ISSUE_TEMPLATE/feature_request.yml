@@ -1,0 +1,17 @@
+name: Feature request
+description: Suggest a tool or a change
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need to do, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Which official `clpctl` command or documented behaviour is it based on?
+      description: This project only wraps documented or observed `clpctl` commands. Link the page of https://www.cloudpanel.io/docs/v2/ if there is one.
+    validations:
+      required: true

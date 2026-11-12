@@ -1,0 +1,160 @@
+name: Release (prepared, inactive)
+
+# INACTIVE: nothing here runs until the maintainer sets the repository variable RELEASE_ENABLED to "true",
+# creates the "npm-publish" environment, adds the npm token, and removes "private": true from package.json. The
+# package is published with npm provenance. READ docs/RELEASING.md FIRST: the `if` below is a convenience (GitHub
+# reads the workflow file of the dispatched branch, so a copy without it can be run from any branch). The real
+# protection is in the settings: NPM_TOKEN as an ENVIRONMENT secret of "npm-publish" (never a repository secret),
+# that environment limited to deployment branches "main" with required reviewers and self-review prevented, branch
+# protection on main - or npm trusted publishing and no token at all.
+#
+# Three jobs, so that no code that runs on the way can both change the package and publish it:
+#   verify   installs everything, runs the whole test suite, the hygiene and the other checks. It runs the dev
+#            dependencies and the test code, and produces nothing that is published.
+#   build    on a fresh runner: installs with scripts off, compiles, packs ONE tarball and records its SHA-256.
+#            No test code and no test-only dependency is executed here, only the compiler.
+#   publish  holds the id-token and the npm token and runs no repository code (no checkout, no install, no script
+#            of the repository): it checks the tarball's checksum, its file list, its package.json and its version,
+#            and publishes exactly that file.
+# No job restores a cache: a release must not depend on something an earlier run left behind.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to publish; it must equal the version in package.json"
+        required: true
+
+permissions: {}
+
+jobs:
+  verify:
+    # only from the default branch, and only when the maintainer has switched releases on
+    if: ${{ vars.RELEASE_ENABLED == 'true' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: The version asked for is the version in package.json, and the package is not private
+        env:
+          REQUESTED: ${{ inputs.version }}
+        run: |
+          node -e "
+            const p = require('./package.json');
+            if (p.private) throw new Error('package.json is still private');
+            if (p.version !== process.env.REQUESTED) throw new Error('version mismatch: ' + p.version + ' vs ' + process.env.REQUESTED);
+          "
+      - run: npm ci
+      - run: npm test
+      - name: No personal data, secrets, hidden characters or install scripts (history included)
+        run: node scripts/check-hygiene.mjs --history-content
+      - name: The hardened-mode gate and the tool reference match the catalogue
+        run: |
+          node scripts/gen-gate.ts --check
+          node scripts/gen-docs.ts --check
+      - name: Runtime dependencies
+        run: |
+          npm audit --omit=dev --audit-level=high
+          npm audit signatures
+      - name: Only the intended files are packed
+        run: npm run check:pack
+
+  build:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      sha256: ${{ steps.pack.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - name: Pack one tarball and record its checksum (one step, so nothing can slip in between)
+        id: pack
+        run: |
+          set -eu
+          npm pack --ignore-scripts
+          set -- cloudpanel-mcp-server-*.tgz
+          if [ "$#" != 1 ] || [ ! -f "$1" ]; then echo "expected exactly one tarball"; exit 1; fi
+          echo "sha256=$(sha256sum "$1" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: package
+          path: cloudpanel-mcp-server-*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: package
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: The tarball is the one that was built, contains only the intended files and nothing that runs on install
+        env:
+          REQUESTED: ${{ inputs.version }}
+          EXPECTED_SHA256: ${{ needs.build.outputs.sha256 }}
+        run: |
+          set -eu
+          set -- cloudpanel-mcp-server-*.tgz
+          if [ "$#" != 1 ] || [ ! -f "$1" ]; then echo "expected exactly one tarball"; exit 1; fi
+          tarball=$1
+          actual=$(sha256sum "$tarball" | cut -d' ' -f1)
+          [ "$actual" = "$EXPECTED_SHA256" ] || { echo "the tarball is not the one the build job packed"; exit 1; }
+          tar -tzf "$tarball" | sed 's#^package/##' > files.txt
+          tar -xzOf "$tarball" package/package.json > package.json.from-tarball
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('package.json.from-tarball', 'utf8'));
+            const files = fs.readFileSync('files.txt', 'utf8').split('\n').filter((f) => f !== '' && !f.endsWith('/'));
+            if (p.name !== 'cloudpanel-mcp-server') throw new Error('unexpected package name ' + p.name);
+            if (p.private) throw new Error('the tarball is marked private');
+            if (p.version !== process.env.REQUESTED) throw new Error('version mismatch: ' + p.version + ' vs ' + process.env.REQUESTED);
+            for (const name of ['preinstall', 'install', 'postinstall', 'prepare', 'prepublish', 'prepack']) {
+              if (name in (p.scripts || {})) throw new Error('the tarball has an install-time script: ' + name);
+            }
+            const direct = Object.keys(p.dependencies || {}).sort().join(',');
+            if (direct !== '@modelcontextprotocol/server,zod') throw new Error('unexpected dependencies: ' + direct);
+            for (const [name, range] of Object.entries(p.dependencies)) {
+              if (!/^[0-9]+\.[0-9]+\.[0-9]+\$/.test(range)) throw new Error('dependency ' + name + ' is not pinned to an exact version: ' + range);
+            }
+            if (Object.keys(p.optionalDependencies || {}).length > 0 || Object.keys(p.peerDependencies || {}).length > 0 || Object.keys(p.bundleDependencies || p.bundledDependencies || {}).length > 0) throw new Error('unexpected optional, peer or bundled dependencies');
+            if (JSON.stringify(p.bin) !== JSON.stringify({ 'cloudpanel-mcp-server': 'dist/index.js' })) throw new Error('unexpected bin');
+            const allowed = [
+              /^dist\/.+\.js\$/,
+              /^hardening\/cloudpanel-mcp-gate\.sh\$/,
+              /^hardening\/cloudpanel-mcp-setup\.sh\$/,
+              /^inventory\/cloudpanel-mcp-inventory\$/,
+              /^docs\/[A-Za-z0-9._-]+\.md\$/,
+              /^docs\/adr\/[A-Za-z0-9._-]+\.md\$/,
+              /^(README|SECURITY|CHANGELOG|CONTRIBUTING|CODE_OF_CONDUCT)\.md\$/,
+              /^(LICENSE|NOTICE|package\.json)\$/,
+            ];
+            const bad = files.filter((f) => !allowed.some((re) => re.test(f)));
+            if (bad.length > 0) throw new Error('unexpected files in the tarball: ' + bad.join(', '));
+          "
+      - name: Publish exactly that file
+        run: npm publish ./cloudpanel-mcp-server-*.tgz --provenance --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,116 @@
+import * as z from "zod/v4";
+import { READ_ONLY, annotate, defineTool, opt, req, type ToolSpec } from "../define.ts";
+import { fileProblem, templateName } from "./common.ts";
+
+export const templateTools: ToolSpec[] = [
+  defineTool({
+    name: "clp_vhost_templates_list",
+    kind: "clpctl",
+    command: "vhost-templates:list",
+    cls: "read",
+    title: "List the vhost templates",
+    summary:
+      "Lists the vhost templates a PHP site can use (clpctl vhost-templates:list): name, root directory, type. Use the exact name as vhostTemplate for clp_site_add_php.",
+    shape: {},
+    annotations: READ_ONLY,
+    options: {},
+    plan: () => ({
+      command: "vhost-templates:list",
+      options: [],
+      flags: [],
+      summary: "List the vhost templates",
+      effects: [],
+      undo: "nothing to undo",
+      protect: [],
+    }),
+  }),
+  defineTool({
+    name: "clp_vhost_template_view",
+    kind: "clpctl",
+    command: "vhost-template:view",
+    cls: "read",
+    title: "View a vhost template",
+    summary: "Shows one vhost template, an NGINX server block (clpctl vhost-template:view).",
+    shape: { name: templateName },
+    annotations: READ_ONLY,
+    options: { name: req("templateName") },
+    plan: (a) => ({
+      command: "vhost-template:view",
+      options: [opt("name", a.name)],
+      flags: [],
+      summary: `View the vhost template ${a.name}`,
+      effects: [],
+      undo: "nothing to undo",
+      protect: [],
+    }),
+  }),
+  defineTool({
+    name: "clp_vhost_template_add",
+    kind: "clpctl",
+    command: "vhost-template:add",
+    cls: "write",
+    title: "Add a vhost template from a file on the server",
+    summary:
+      "Imports a vhost template (NGINX configuration for new PHP sites) from a file the operator already put in the templates/ subdirectory of the profile's file directories (clpctl vhost-template:add), ending in .tpl or .conf. Remote URLs are deliberately not accepted. Its first line may be #{\"rootDirectory\":\"public\",\"phpVersion\":\"8.4\"} to prefill the site wizard.",
+    shape: {
+      name: templateName.describe("Name for the new template."),
+      file: z.string().min(2).max(256).describe("Absolute path of the template file on the SERVER, in the templates/ subdirectory of one of the profile's file directories (clp_server_info shows the exact directories), ending in .tpl or .conf."),
+    },
+    annotations: annotate(false, false, false),
+    options: { name: req("templateName"), file: req("templatePath") },
+    check: (a, p) => fileProblem("file", "template", String(a["file"]), p),
+    plan: (a) => ({
+      command: "vhost-template:add",
+      options: [opt("name", a.name), opt("file", a.file)],
+      flags: [],
+      summary: `Add the vhost template "${a.name}" from ${a.file}`,
+      effects: ["new PHP sites can use this NGINX configuration; sites already created are not changed"],
+      undo: "clp_vhost_template_delete removes the template",
+      protect: [],
+    }),
+  }),
+  defineTool({
+    name: "clp_vhost_templates_import",
+    kind: "clpctl",
+    command: "vhost-templates:import",
+    cls: "write",
+    title: "Import the vhost templates from GitHub",
+    summary:
+      "Updates the vhost templates from CloudPanel's public GitHub repository (clpctl vhost-templates:import). CloudPanel already runs this every night.",
+    shape: {},
+    annotations: annotate(false, false, true, true),
+    options: {},
+    plan: () => ({
+      command: "vhost-templates:import",
+      options: [],
+      flags: [],
+      summary: "Import the vhost templates from CloudPanel's GitHub repository",
+      effects: ["downloads CloudPanel's templates and updates the system templates"],
+      undo: "not needed; the same import runs nightly",
+      protect: [],
+    }),
+  }),
+  defineTool({
+    name: "clp_vhost_template_delete",
+    kind: "clpctl",
+    command: "vhost-template:delete",
+    cls: "destructive",
+    title: "Delete a vhost template",
+    summary:
+      "Deletes a vhost template (clpctl vhost-template:delete). Sites already created from it keep their own vhost. A human must type the template name to approve.",
+    shape: { name: templateName },
+    annotations: annotate(false, true, true),
+    options: { name: req("templateName") },
+    plan: (a) => ({
+      command: "vhost-template:delete",
+      options: [opt("name", a.name)],
+      flags: [],
+      summary: `DELETE the vhost template "${a.name}"`,
+      effects: ["new PHP sites can no longer use this template"],
+      undo: "re-add it with clp_vhost_template_add if you still have the file, or import the system templates again",
+      confirm: { target: a.name, noun: "template" },
+      protect: [],
+    }),
+  }),
+];
+

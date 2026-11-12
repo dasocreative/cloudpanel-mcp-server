@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="How it works: your AI client, cloudpanel-mcp-server on your computer, SSH to the gate on the server, then sudo clpctl on CloudPanel. Each step adds a protection.">
+<defs><marker id="alight" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M1 1l7 4-7 4" fill="none" stroke="#0d6efd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect width="1200" height="360" rx="20" fill="#ffffff"/>
+<rect x="24" y="30" width="246" height="300" rx="16" fill="#f6f9ff" stroke="#d6e4ff"/>
+<g transform="translate(44 50)"><rect width="44" height="44" rx="11" fill="#0d6efd"/><g transform="translate(10 10)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.3l2.8 2.8 5.6-6"/></g></g>
+<text x="44" y="124" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#0b1b33">Your AI client</text>
+<text x="44" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">Claude Code, Codex, Gemini,</text>
+<text x="44" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">OpenCode, Pi, Cursor, ...</text>
+<rect x="44" y="190" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M56 203.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="74" y="208" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Asks you to approve</text>
+<path d="M276 180.0h42" stroke="#0d6efd" stroke-width="2.4" stroke-linecap="round" marker-end="url(#alight)"/>
+<text x="297.0" y="170.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0d6efd">MCP</text>
+<rect x="326" y="30" width="246" height="300" rx="16" fill="#f6f9ff" stroke="#d6e4ff"/>
+<g transform="translate(346 50)"><rect width="44" height="44" rx="11" fill="#0d6efd"/><g transform="translate(10 10)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></g>
+<text x="346" y="124" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#0b1b33">cloudpanel-mcp-server</text>
+<text x="346" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">runs on your computer</text>
+<text x="346" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">(npx, stdio)</text>
+<rect x="346" y="190" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M358 203.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="376" y="208" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Read-only by default</text>
+<rect x="346" y="222" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M358 235.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="376" y="240" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Dry run + plan token</text>
+<rect x="346" y="254" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M358 267.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="376" y="272" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Passwords stay local</text>
+<rect x="346" y="286" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M358 299.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="376" y="304" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Audit log</text>
+<path d="M578 180.0h42" stroke="#0d6efd" stroke-width="2.4" stroke-linecap="round" marker-end="url(#alight)"/>
+<text x="599.0" y="170.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0d6efd">SSH</text>
+<rect x="628" y="30" width="246" height="300" rx="16" fill="#f6f9ff" stroke="#d6e4ff"/>
+<g transform="translate(648 50)"><rect width="44" height="44" rx="11" fill="#0d6efd"/><g transform="translate(10 10)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3L20.5 2.5"/><path d="M16.5 6.5l3 3"/><path d="M13.8 9.2l2 2"/></g></g>
+<text x="648" y="124" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#0b1b33">The gate</text>
+<text x="648" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">on the server: the SSH key</text>
+<text x="648" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">can run nothing else</text>
+<rect x="648" y="190" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M660 203.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="678" y="208" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Only clpctl commands</text>
+<rect x="648" y="222" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M660 235.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="678" y="240" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Values checked again</text>
+<rect x="648" y="254" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M660 267.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="678" y="272" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Protected sites</text>
+<path d="M880 180.0h42" stroke="#0d6efd" stroke-width="2.4" stroke-linecap="round" marker-end="url(#alight)"/>
+<text x="901.0" y="170.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#0d6efd">sudo</text>
+<rect x="930" y="30" width="246" height="300" rx="16" fill="#f6f9ff" stroke="#d6e4ff"/>
+<g transform="translate(950 50)"><rect width="44" height="44" rx="11" fill="#0d6efd"/><g transform="translate(10 10)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="M6.5 9.5l3 2.5-3 2.5"/><path d="M12 15h5.5"/></g></g>
+<text x="950" y="124" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#0b1b33">CloudPanel</text>
+<text x="950" y="150" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">sudo -n clpctl</text>
+<text x="950" y="170" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14.5" fill="#4a5b75">(one sudoers line)</text>
+<rect x="950" y="190" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M962 203.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="980" y="208" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">Official CLI only</text>
+<rect x="950" y="222" width="206" height="26" rx="13" fill="#e7f1ff"/>
+<path d="M962 235.5l3.5 3.5 6.5-7" fill="none" stroke="#0a58ca" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="980" y="240" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="600" fill="#0a58ca">No shell, no database edits</text>
+</svg>

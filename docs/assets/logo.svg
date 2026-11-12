@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 64 64" role="img" aria-label="cloudpanel-mcp-server">
+  <g transform="translate(0 0) scale(1.0)">
+    <rect width="64" height="64" rx="16" fill="#0d6efd"/>
+    <g fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="13" y="18" width="30" height="10" rx="3"/>
+      <rect x="13" y="32" width="30" height="10" rx="3"/>
+      <rect x="13" y="46" width="30" height="0.01" rx="0" opacity="0"/>
+      <path d="M18.5 23h.01M18.5 37h.01"/>
+      <path d="M28 23h9M28 37h9"/>
+    </g>
+    <path d="M50 10c.7 3.6 1.9 4.8 5.5 5.5-3.6.7-4.8 1.9-5.5 5.5-.7-3.6-1.9-4.8-5.5-5.5 3.6-.7 4.8-1.9 5.5-5.5z" fill="#fff"/>
+    <path d="M44 44.5l8.5 3.2v4.6c0 3.9-2.7 7.1-8.5 8.7-5.8-1.6-8.5-4.8-8.5-8.7v-4.6z" fill="#fff"/>
+    <path d="M40.6 52.6l2.4 2.4 4.4-4.4" fill="none" stroke="#0d6efd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
